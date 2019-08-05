@@ -70,12 +70,25 @@ public class MainActivity extends AppCompatActivity {
             Uri imageUri = data.getData();
             StorageReference ref = FireBaseUtil.mStorageRef.child((imageUri.getLastPathSegment()));
 
-            UploadTask uploadTask = ref.putFile(imageUri);
-            uploadTask.addOnSuccessListener(this, taskSnapshot -> {
-        String url=taskSnapshot.getStorage().getDownloadUrl().toString();
+            ref.putFile(imageUri).addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    String pictureName=taskSnapshot.getStorage().getPath();
+                    deals.setImageName(pictureName);
+                }
+            });
+            ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    deals.setImageUrl(uri.toString());
+                    showImage(deals.getImageUrl());
+                }
+            });
+            /*uploadTask.addOnSuccessListener(this, taskSnapshot -> {
+        String url=taskSnapshot.getMetadata().getReference().getDownloadUrl().toString();
         deals.setImageUrl(url);
         showImage(url);
-            });
+            });*/
 
 
         }
@@ -150,6 +163,15 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Please save the deal before deleting", Toast.LENGTH_LONG).show();
         }
         mDatabaseReference.child(deals.getId()).removeValue();
+        if ((deals.getImageName()!=null)&& !deals.getImageName().isEmpty()){
+StorageReference picRef=FireBaseUtil.mFirebaseStorage.getReference().child(deals.getImageName());
+picRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+    @Override
+    public void onSuccess(Void aVoid) {
+
+    }
+});
+        }
     }
 
     private void backToList() {

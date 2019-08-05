@@ -27,7 +27,6 @@ public class DealAdapter extends RecyclerView.Adapter<DealAdapter.DealViewHolder
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabase;
     private ChildEventListener mChildEventListener;
-private ImageView dealImage;
     public DealAdapter(){
 
         mFirebaseDatabase=FireBaseUtil.firebaseDatabase;
@@ -126,7 +125,7 @@ private ImageView dealImage;
 
         private void showImage(String url){
             if(url != null && !url.isEmpty()){
-                Picasso.get().load(url).resize(80,80).centerCrop().into(imageView);
+                Picasso.get().load(url).resize(160,160).centerCrop().into(imageView);
             }
         }
     }
